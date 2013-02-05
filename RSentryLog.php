@@ -18,11 +18,6 @@
  */
 class RSentryLog extends CLogRoute
 {
-    const DEBUG = 10;
-    const INFO = 20;
-    const WARNING = 30;
-    const ERROR = 40;
-
     /**
      * @var string Sentry DSN value
      */
@@ -58,19 +53,9 @@ class RSentryLog extends CLogRoute
     protected function processLogs($logs)
     {
         foreach ($logs as $log) {
-            if ($log[1] == 'error') {
-                $level = self::ERROR;
-            } else if ($log[1] == 'warning') {
-                $level = self::WARNING;
-            } else if ($log[1] == 'trace') {
-                $level = self::DEBUG;
-            } else { //if ($log[1] == 'info') {
-                $level = self::INFO;
-            }
-
             $format = explode("\n", $log[0]);
             $title = strip_tags($format[0]);
-            $this->_client->captureMessage($title, array(), $level, true);
+            $this->_client->captureMessage($title, array(), $log[1], true);
         }
     }
 }
