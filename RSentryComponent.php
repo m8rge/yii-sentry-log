@@ -41,15 +41,31 @@ class RSentryComponent extends CApplicationComponent
             $this->_client = new Raven_Client($this->dsn);
 
         Yii::app()->attachEventHandler('onException', array($this, 'handleException'));
+        Yii::app()->attachEventHandler('onError', array($this, 'handleError'));
+
+        $error_handler = new Raven_ErrorHandler($this->_client);
+        $error_handler->registerShutdownFunction();
     }
 
     /**
      * logs exception
-     * @param CEvent $event Description
+     * @param CExceptionEvent $event Description
      */
     public function handleException($event)
     {
-        $this->_client = $this->_client->captureException($event->exception);
+        $this->_client->captureException($event->exception);
+        if ($this->_client->getLastError())
+            Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
     }
 
+    /**
+     * @param CErrorEvent $event
+     */
+    public function handleError($event)
+    {
+        $e = new ErrorException($event->message, $event->code, 0, $event->file, $event->line);
+        $this->_client->captureException($e);
+        if ($this->_client->getLastError())
+            Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
+    }
 }

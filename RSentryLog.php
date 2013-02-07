@@ -55,7 +55,7 @@ class RSentryLog extends CLogRoute
         foreach ($logs as $log) {
             $format = explode("\n", $log[0]);
             $title = strip_tags($format[0]);
-            $this->_client->captureMessage($title, array(), $log[1], true);
+            $this->_client->captureMessage($title, array(), $log[1], false);
         }
     }
 }
