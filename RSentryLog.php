@@ -29,6 +29,11 @@ class RSentryLog extends CLogRoute
     protected $_client;
 
     /**
+     * @var string
+     */
+    public $logger = 'php';
+
+    /**
      * Initializes the connection.
      */
     public function init()
@@ -42,8 +47,9 @@ class RSentryLog extends CLogRoute
             spl_autoload_register(array('YiiBase', 'autoload'));
         }
 
-        if ($this->_client === null)
-            $this->_client = new Raven_Client($this->dsn);
+        if ($this->_client === null) {
+            $this->_client = new Raven_Client($this->dsn, array('logger' => $this->logger));
+        }
     }
 
     /**

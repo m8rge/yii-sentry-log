@@ -24,6 +24,11 @@ class RSentryComponent extends CApplicationComponent
     protected $_client;
 
     /**
+     * @var string
+     */
+    public $logger = 'php';
+
+    /**
      * Initializes the connection.
      */
     public function init()
@@ -37,8 +42,9 @@ class RSentryComponent extends CApplicationComponent
             spl_autoload_register(array('YiiBase', 'autoload'));
         }
 
-        if ($this->_client === null)
-            $this->_client = new Raven_Client($this->dsn);
+        if ($this->_client === null) {
+            $this->_client = new Raven_Client($this->dsn, array('logger' => $this->logger));
+        }
 
         Yii::app()->attachEventHandler('onException', array($this, 'handleException'));
         Yii::app()->attachEventHandler('onError', array($this, 'handleError'));
@@ -54,8 +60,9 @@ class RSentryComponent extends CApplicationComponent
     public function handleException($event)
     {
         $this->_client->captureException($event->exception);
-        if ($this->_client->getLastError())
+        if ($this->_client->getLastError()) {
             Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
+        }
     }
 
     /**
@@ -65,7 +72,8 @@ class RSentryComponent extends CApplicationComponent
     {
         $e = new ErrorException($event->message, $event->code, 0, $event->file, $event->line);
         $this->_client->captureException($e);
-        if ($this->_client->getLastError())
+        if ($this->_client->getLastError()) {
             Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
+        }
     }
 }
