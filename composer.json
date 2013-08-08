@@ -1,0 +1,25 @@
+{
+    "name": "m8rge/yii-sentry-log",
+    "description": "A Yii client for Sentry (http://getsentry.com)",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Pieter Venter",
+            "email": "boontjiesa@gmail.com"
+        },
+        {
+            "name": "RoliesTheBee",
+            "homepage": "https://github.com/rolies106"
+        },
+        {
+            "name": "m8rge",
+            "email": "to.merge@gmail.com"
+        }
+    ],
+    "require": {
+        "raven/raven": "0.6.*"
+    },
+    "require-dev": {
+        "yiisoft/yii": "dev-master"
+    }
+}

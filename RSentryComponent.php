@@ -35,13 +35,6 @@ class RSentryComponent extends CApplicationComponent
     {
         parent::init();
 
-        if (!class_exists('Raven_Autoloader', false)) {
-            spl_autoload_unregister(array('YiiBase', 'autoload'));
-            include(dirname(__FILE__) . '/raven-php/lib/Raven/Autoloader.php');
-            Raven_Autoloader::register();
-            spl_autoload_register(array('YiiBase', 'autoload'));
-        }
-
         if ($this->_client === null) {
             $this->_client = new Raven_Client($this->dsn, array('logger' => $this->logger));
         }
