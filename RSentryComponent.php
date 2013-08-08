@@ -57,10 +57,6 @@ class RSentryComponent extends CApplicationComponent
      */
     public function handleException($event)
     {
-        if (defined('YII_DEBUG') && YII_DEBUG === true) {
-            return false;
-        }
-
         $this->_error_handler->handleException($event->exception);
         if ($this->_client->getLastError()) {
             Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
@@ -72,10 +68,6 @@ class RSentryComponent extends CApplicationComponent
      */
     public function handleError($event)
     {
-        if (defined('YII_DEBUG') && YII_DEBUG === true) {
-            return false;
-        }
-
         $this->_error_handler->handleError(
             $event->code,
             $event->message,

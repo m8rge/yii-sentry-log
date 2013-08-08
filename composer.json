@@ -1,7 +1,6 @@
 {
     "name": "m8rge/yii-sentry-log",
     "description": "A Yii client for Sentry (http://getsentry.com)",
-    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Pieter Venter",
