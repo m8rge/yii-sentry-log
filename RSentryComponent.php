@@ -24,7 +24,12 @@ class RSentryComponent extends CApplicationComponent
     protected $_client;
 
     /**
-     * @var string
+     * @var Raven_ErrorHandler Sentry error handler
+     */
+    protected $_error_handler;
+
+    /**
+     * @var string Logger indentifier
      */
     public $logger = 'php';
 
@@ -42,9 +47,9 @@ class RSentryComponent extends CApplicationComponent
         Yii::app()->attachEventHandler('onException', array($this, 'handleException'));
         Yii::app()->attachEventHandler('onError', array($this, 'handleError'));
 
-        $error_handler = new Raven_ErrorHandler($this->_client);
-        $error_handler->registerShutdownFunction();
-    }
+        $this->_error_handler = new Raven_ErrorHandler($this->_client);
+        $this->_error_handler->registerShutdownFunction();
+	}
 
     /**
      * logs exception
@@ -52,7 +57,11 @@ class RSentryComponent extends CApplicationComponent
      */
     public function handleException($event)
     {
-        $this->_client->captureException($event->exception);
+        if (defined('YII_DEBUG') && YII_DEBUG === true) {
+            return false;
+        }
+
+        $this->_error_handler->handleException($event->exception);
         if ($this->_client->getLastError()) {
             Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
         }
@@ -63,8 +72,17 @@ class RSentryComponent extends CApplicationComponent
      */
     public function handleError($event)
     {
-        $e = new ErrorException($event->message, $event->code, 0, $event->file, $event->line);
-        $this->_client->captureException($e);
+        if (defined('YII_DEBUG') && YII_DEBUG === true) {
+            return false;
+        }
+
+        $this->_error_handler->handleError(
+            $event->code,
+            $event->message,
+            $event->file,
+            $event->line,
+            $event->params // slightly different than typical context
+        );
         if ($this->_client->getLastError()) {
             Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
         }

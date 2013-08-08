@@ -29,7 +29,7 @@ class RSentryLog extends CLogRoute
     protected $_client;
 
     /**
-     * @var string
+     * @var string Logger identifier
      */
     public $logger = 'php';
 
