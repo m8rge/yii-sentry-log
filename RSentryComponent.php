@@ -79,4 +79,12 @@ class RSentryComponent extends CApplicationComponent
             Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
         }
     }
+
+    /**
+     * @return \Raven_Client
+     */
+    public function getClient()
+    {
+        return $this->_client;
+    }
 }
