@@ -6,7 +6,7 @@
  * RSentryComponent can be used with RSentryLog but only tracts exceptions
  * as Yii logger does not pass the exception to the logger but rather a string traceback
  * RSentryLog "error" logging is not that usefull as the traceback
- * does not contain veriables but only a string where this component allows you to use
+ * does not contain variables but only a string where this component allows you to use
  * the power of sentry for exceptions.
  *
  * @author Pieter Venter <boontjiesa@gmail.com>
@@ -86,5 +86,12 @@ class RSentryComponent extends CApplicationComponent
     public function getClient()
     {
         return $this->_client;
+    }
+
+    public function captureException($e, $additionalData = array())
+    {
+        $this->_client->extra_context($additionalData);
+        $this->_client->captureException($e);
+        $this->_client->context->clear();
     }
 }
