@@ -10,6 +10,7 @@
  * the power of sentry for exceptions.
  *
  * @author Pieter Venter <boontjiesa@gmail.com>
+ * @property \Raven_Client $client
  */
 class RSentryComponent extends CApplicationComponent
 {
@@ -88,10 +89,22 @@ class RSentryComponent extends CApplicationComponent
         return $this->_client;
     }
 
+    /**
+     * @param Exception $e
+     * @param array $additionalData
+     */
     public function captureException($e, $additionalData = array())
     {
         $this->_client->extra_context($additionalData);
         $this->_client->captureException($e);
         $this->_client->context->clear();
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setContext($data)
+    {
+        $this->_client->extra_context($data);
     }
 }
