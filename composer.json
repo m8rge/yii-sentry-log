@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "raven/raven": "~0.8"
+        "sentry/sentry": "^1.9"
     },
     "require-dev": {
         "yiisoft/yii": "dev-master"
