@@ -58,6 +58,13 @@ class RSentryComponent extends CApplicationComponent
      */
     public function handleException($event)
     {
+        if ($event->exception instanceof CHttpException &&
+            $event->exception->statusCode >= 400 &&
+            $event->exception->statusCode < 500
+        ) {
+            return;
+        }
+
         $this->_error_handler->handleException($event->exception);
         if ($this->_client->getLastError()) {
             Yii::log($this->_client->getLastError(), CLogger::LEVEL_ERROR, 'raven');
