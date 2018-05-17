@@ -34,6 +34,11 @@ class RSentryLog extends CLogRoute
     public $logger = 'php';
 
     /**
+     * @var array array of regex
+     */
+    public $exceptTitle = array();
+
+    /**
      * Initializes the connection.
      */
     public function init()
@@ -46,6 +51,21 @@ class RSentryLog extends CLogRoute
     }
 
     /**
+     * @param $title
+     * @return bool
+     */
+    public function canLogTitle($title)
+    {
+        foreach ($this->exceptTitle as $pattern) {
+            if (preg_match($pattern, $title)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Send log messages to Sentry.
      * @param array $logs list of log messages
      */
@@ -54,7 +74,9 @@ class RSentryLog extends CLogRoute
         foreach ($logs as $log) {
             $format = explode("\n", $log[0]);
             $title = strip_tags($format[0]);
-            $this->_client->captureMessage($title, array(), $log[1], false);
+            if ($this->canLogTitle($title)) {
+                $this->_client->captureMessage($title, array(), $log[1], false);
+            }
         }
     }
 }
