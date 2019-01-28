@@ -34,6 +34,11 @@ class RSentryLog extends CLogRoute
     public $logger = 'php';
 
     /**
+     * @var string|null
+     */
+    public $environment = null;
+
+    /**
      * @var array array of regex
      */
     public $exceptTitle = array();
@@ -46,7 +51,10 @@ class RSentryLog extends CLogRoute
         parent::init();
 
         if ($this->_client === null) {
-            $this->_client = new Raven_Client($this->dsn, array('logger' => $this->logger));
+            $this->_client = new Raven_Client($this->dsn, array(
+                'logger' => $this->logger,
+                'environment' => $this->environment,
+            ));
         }
     }
 

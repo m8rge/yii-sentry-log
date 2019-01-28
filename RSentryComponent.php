@@ -30,9 +30,14 @@ class RSentryComponent extends CApplicationComponent
     protected $_error_handler;
 
     /**
-     * @var string Logger indentifier
+     * @var string Logger identifier
      */
     public $logger = 'php';
+
+    /**
+     * @var string|null
+     */
+    public $environment = null;
 
     /**
      * Initializes the connection.
@@ -42,7 +47,10 @@ class RSentryComponent extends CApplicationComponent
         parent::init();
 
         if ($this->_client === null) {
-            $this->_client = new Raven_Client($this->dsn, array('logger' => $this->logger));
+            $this->_client = new Raven_Client($this->dsn, array(
+                'logger' => $this->logger,
+                'environment' => $this->environment,
+            ));
         }
 
         Yii::app()->attachEventHandler('onException', array($this, 'handleException'));
