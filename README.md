@@ -27,15 +27,14 @@ RSentryComponent can be used to have proper trace back messages to use with the 
                     'levels'=>'error, warning',
                     // optional
                     //     adds to user context values from arrays or objects chains from $GLOBAL
-                    //     adds None if chain is missing
+                    //     skips if anything from the chain is absent (respects attributes, but not other getters)
                     //     NB! default values for user context will disappear and these values will be added
                     'context' => [
                         // adds $GLOBALS['_SESSION']['user']->username under 'nameOfUser' key
                         'nameOfUser' => ['_SESSION', 'user', 'username'],
                         // adds $GLOBALS['_SESSION']['user']->username under '_SESSION:user:email' key
                         ['_SESSION', 'user', 'email'],
-                        // adds $GLOBALS['_SESSION']['optionalObject']->someProperty['someSubKey'] value
-                        // or None under 'optionalValue' key
+                        // adds $GLOBALS['_SESSION']['optionalObject']->someProperty['someSubKey'] value, skips if absent
                         'optionalValue' => ['_SESSION', 'optionalObject', 'someProperty', 'someSubKey'],
                     ]
                 ),                

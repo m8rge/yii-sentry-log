@@ -44,7 +44,7 @@ class RSentryLog extends CLogRoute
     public $exceptTitle = array();
 
     /**
-     * @var array of string|string[] Fetch context from globals by array or objects chains. E.g. ['a' => ['_SESSION','a'], ['_SESSION','User', 'id'], ['_SESSION','optional_value']]
+     * @var array of string|string[] Fetch context from globals by array keys or objects properties chains if exists. E.g. ['a' => ['_SESSION','a'], ['_SESSION','User', 'id'], ['_SESSION','optional_object', 'property']]
      */
     public $context = false;
 
@@ -111,7 +111,9 @@ class RSentryLog extends CLogRoute
                 $name = implode(':', $item);
             }
             if (is_string($item)) {
-                $r[$name] = $GLOBALS[$item];
+                if(key_exists($item, $GLOBALS)) {
+                    $r[$name] = $GLOBALS[$item];
+                }
             } elseif (is_array($item)) {
                 $register = null;
                 $fail = false;
@@ -133,6 +135,9 @@ class RSentryLog extends CLogRoute
                                 $fail = true;
                                 break;
                             }
+                        } else {
+                            $fail = true;
+                            break;
                         }
                     }
                 }
