@@ -25,6 +25,18 @@ RSentryComponent can be used to have proper trace back messages to use with the 
                     'class'=>'application.components.yii-sentry-log.RSentryLog',
                     'dsn'=> '[YOUR_DSN_FROM_SENTRY_SERVER]',
                     'levels'=>'error, warning',
+                    // optional
+                    //     adds to user context values from arrays or objects chains from $GLOBAL
+                    //     skips if anything from the chain is absent (respects attributes, but not other getters)
+                    //     NB! default values for user context will disappear and these values will be added
+                    'context' => [
+                        // adds $GLOBALS['_SESSION']['user']->username under 'nameOfUser' key
+                        'nameOfUser' => ['_SESSION', 'user', 'username'],
+                        // adds $GLOBALS['_SESSION']['user']->username under '_SESSION:user:email' key
+                        ['_SESSION', 'user', 'email'],
+                        // adds $GLOBALS['_SESSION']['optionalObject']->someProperty['someSubKey'] value, skips if absent
+                        'optionalValue' => ['_SESSION', 'optionalObject', 'someProperty', 'someSubKey'],
+                    ]
                 ),                
             ),
         ),

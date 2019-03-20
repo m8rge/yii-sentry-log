@@ -44,6 +44,11 @@ class RSentryLog extends CLogRoute
     public $exceptTitle = array();
 
     /**
+     * @var array of string|string[] Fetch context from globals by array keys or objects properties chains if exists. E.g. ['a' => ['_SESSION','a'], ['_SESSION','User', 'id'], ['_SESSION','optional_object', 'property']]
+     */
+    public $context = false;
+
+    /**
      * Initializes the connection.
      */
     public function init()
@@ -83,8 +88,65 @@ class RSentryLog extends CLogRoute
             $format = explode("\n", $log[0]);
             $title = strip_tags($format[0]);
             if ($this->canLogTitle($title)) {
+                if ($this->context) {
+                    $this->_client->user_context($this->extractContext(), true);
+                }
                 $this->_client->captureMessage($title, array(), $log[1], false);
             }
         }
     }
+
+    /**
+     * Extracts from GLOBALS stuff set in context
+     * @return array
+     */
+    private function extractContext()
+    {
+        $r = [];
+        if (!$this->context)
+            return $r;
+
+        foreach ($this->context as $name => $item) {
+            if (is_numeric($name)) { // name defaults to glued array if it is numeric
+                $name = implode(':', $item);
+            }
+            if (is_string($item)) {
+                if(key_exists($item, $GLOBALS)) {
+                    $r[$name] = $GLOBALS[$item];
+                }
+            } elseif (is_array($item)) {
+                $register = null;
+                $fail = false;
+                foreach ($item as $k => $v) {
+                    if ($k === 0) {
+                        $register = $GLOBALS[$v];
+                    } else {
+                        if (is_array($register)) {
+                            if (key_exists($v, $register)) {
+                                $register = $register[$v];
+                            } else {
+                                $fail = true;
+                                break;
+                            }
+                        } elseif (is_object($register)) {
+                            if (property_exists($register, $v) || (method_exists($register, 'getAttribute') && is_array($register->attributes) && array_key_exists($v, $register->attributes))) {
+                                $register = $register->{$v};
+                            } else {
+                                $fail = true;
+                                break;
+                            }
+                        } else {
+                            $fail = true;
+                            break;
+                        }
+                    }
+                }
+                if (!$fail) {
+                    $r[$name] = $register;
+                }
+            }
+        }
+        return $r;
+    }
+
 }
