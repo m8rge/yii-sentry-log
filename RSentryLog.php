@@ -91,6 +91,7 @@ class RSentryLog extends CLogRoute
                 if ($this->context) {
                     $this->_client->user_context($this->extractContext(), true);
                 }
+                $this->_client->tags_context(['yii.component' => get_class($this)]);
                 $this->_client->captureMessage($title, array(), $log[1], false);
             }
         }
@@ -111,7 +112,7 @@ class RSentryLog extends CLogRoute
                 $name = implode(':', $item);
             }
             if (is_string($item)) {
-                if(key_exists($item, $GLOBALS)) {
+                if (key_exists($item, $GLOBALS)) {
                     $r[$name] = $GLOBALS[$item];
                 }
             } elseif (is_array($item)) {
@@ -119,7 +120,12 @@ class RSentryLog extends CLogRoute
                 $fail = false;
                 foreach ($item as $k => $v) {
                     if ($k === 0) {
-                        $register = $GLOBALS[$v];
+                        if (key_exists($v, $GLOBALS)) {
+                            $register = $GLOBALS[$v];
+                        } else {
+                            $fail = true;
+                            break;
+                        }
                     } else {
                         if (is_array($register)) {
                             if (key_exists($v, $register)) {
